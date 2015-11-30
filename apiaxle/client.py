@@ -2,6 +2,8 @@ import cStringIO
 import logging, json
 import traceback
 from logging import getLogger
+from api import Api
+from key import Key
 
 try:
     import pycurl
@@ -9,7 +11,7 @@ except ImportError, e:
     print("Error: {}\n Please install pycurl.")
 
 
-class Apiaxle():
+class Client():
 
     VERSION = 'v1'
 
@@ -49,97 +51,66 @@ class Apiaxle():
         try:
             c.perform()
         except Exception, e:
-            return None, None, None
+            logging.error(e)
+            return None
 
         statusCode = c.getinfo(pycurl.HTTP_CODE)
         error = c.errstr()
         message = buf.getvalue()  # get results do nothing yet
 
-        return statusCode, message, error
-
-    def get(self, path):
-        status, body, error = self.__do_curl(path, 'GET')
-        if status == 200:
-            try:
-                return json.loads(body)
-            except Error, e:
-                logging.error(e)
-        else:
-            logging.error(body)
+        try:
+            return json.loads(message).get('results')
+        except Error, e:
+            logging.error(message)
+            logging.error(e)
 
         return None
 
-    def post(self, path, payload):
-        status, body, error = self.__do_curl(path, 'POST', payload)
-        if status == 200:
-            try:
-                return json.loads(body)
-            except Error, e:
-                logging.error(e)
-        else:
-            logging.error(body)
+    def __get(self, path):
+        return self.__parse_response(self.__do_curl(path, 'GET'))
 
-        return None
+    def __post(self, path, payload):
+        return self.__parse_response(self.__do_curl(path, 'POST', payload))
 
-    def put(self, path, payload={}):
-        status, body, error = self.__do_curl(path, 'PUT', payload)
-        if status == 200:
-            try:
-                return json.loads(body)
-            except Error, e:
-                logging.error(e)
-        else:
-            logging.error(body)
+    def __put(self, path, payload={}):
+        return self.__parse_response(self.__do_curl(path, 'PUT', payload))
 
-        return None
+    def __parse_response(self, response):
+        try:
+            if 'error' in response:
+                logging.error(response['error']['message'])
+        except TypeError, e:
+            logging.error(e)
+
+        return response
 
     def apis(self):
-        return self.get('/apis').get('results')
+        return self.__get('/apis')
 
     def keys(self):
-        return self.get('/keys').get('results')
+        return self.__get('/keys')
 
     def new_api(self, name, **kwargs):
-        self.post('/api/{}'.format(name), kwargs)
+        response = self.__post('/api/{}'.format(name), kwargs)
         return self.api(name)
 
     def new_key(self, key):
-        self.post('/key/{}'.format(key), {})
+        self.__post('/key/{}'.format(key), {})
         return self.key(key)
 
     def link_key(self, api, key):
-        return self.put('/api/{api}/linkkey/{key}'.format(api=api, key=key))
+        return self.__put('/api/{api}/linkkey/{key}'.format(api=api, key=key))
 
     def api(self, name):
-        return Api(self.get('/api/{}'.format(name)).get('results'), name)
+        try:
+            return Api(self.__get('/api/{}'.format(name)), name)
+        except Exception, e:
+            logging.error(e)
+        return None
 
     def key(self, key):
-        return Api(self.get('/key/{}'.format(key)).get('results'), key)
-
-
-class Api():
-
-    def __init__(self, api, api_name, **kwargs):
-        self._api_name = api_name
-        for key in api:
-            setattr(self, key, api[key])
-
-        for key in kwargs:
-            setattr(self, key, kwargs[key])
-
-    def __str__(self):
-        return self._api_name
-
-
-class Key():
-
-    def __init__(self, api_key, key_text, **kwargs):
-        self._key_text = key_text
-        for key in api_key:
-            setattr(self, key, api_key[key])
-
-        for key in kwargs:
-            setattr(self, key, kwargs[key])
-
-    def __str__(self):
-        return self._key_text
+        try:
+            return Key(self.__get('/key/{}'.format(key)), key)
+        except Exception, e:
+            logging.error(e)
+        return None

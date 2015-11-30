@@ -1,4 +1,4 @@
-Python library to interact with the Apiaxle REST api
+# Python client to the Apiaxle REST api
 
 About
 ==========
@@ -8,7 +8,6 @@ About
 
 Examples
 ========
-
 
 
 Contributing
@@ -24,4 +23,4 @@ Any contribution is highly encouraged and desired. :)
 License
 =======
 
-(MIT)[https://github.com/vadio/python-apiaxle/blob/master/LICENSE]
+[MIT](https://github.com/vadio/python-apiaxle/blob/master/LICENSE.txt)
