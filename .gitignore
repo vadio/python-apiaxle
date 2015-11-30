@@ -6,3 +6,4 @@ share
 pip-selfcheck.json
 .Python
 .DS_Store
+apiaxle.egg-info
