@@ -44,4 +44,3 @@ License
 =======
 
 [MIT](https://github.com/vadio/python-apiaxle/blob/master/LICENSE.txt)
-
