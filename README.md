@@ -1,5 +1,3 @@
-
-
 # Python client to the Apiaxle REST api
 
 About
