@@ -11,8 +11,8 @@ def test_get_test_api(*args):
     return json.loads(f.read())['results']
 
 
-def test_post_create_api(rest_client, path, **kwargs):
-    pass
+# def test_post_create_api(rest_client, path, **kwargs):
+#     pass
 
 
 class TestApiaxle(unittest.TestCase):
@@ -42,7 +42,7 @@ class TestApiaxle(unittest.TestCase):
     def patchers(self):
         return [
             patch('apiaxle.restclient.RestClient.get', test_get_test_api),
-            patch('apiaxle.restclient.RestClient.post', test_post_create_api),
+            #patch('apiaxle.restclient.RestClient.post', test_post_create_api),
         ]
 
     def start_patchers(self):
