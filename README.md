@@ -37,6 +37,10 @@ Examples
         >>> demo_key = aa.key('<key_name>')
         >>> demo_key.update(keyWord='value',keyWord2='value2')
 
+Tests
+========
+Tests are run with nose:
+       >>> nosetests
 
 
 Contributing
