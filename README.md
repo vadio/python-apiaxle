@@ -8,26 +8,39 @@ About
 
 Examples
 ========
-### Import Apiaxle Client
+### Import Apiaxle
 
-        >>> from apiaxle import client
-        >>> api_client = client.Client("localhost","3000")
+        >>> from apiaxle import Apiaxle
+        >>> aa = Apiaxle("localhost","3000")
 
 ### Add new api
 
-        >>> api_client.new_api('<new_api_name>',endPoint='<new_api_endpoint>:<port>')
+        >>> aa.new_api('<new_api_name>',endPoint='<new_api_endpoint>:<port>')
 
-* Client.new_api() will accept any input specified in the apiaxle api for provisioning an new api as a keywork argument
+* Apiaxle.new_api() will accept any input specified in the apiaxle api for provisioning an new api as a keywork argument
 
 ### Add new key
         
-        >>> api_client.new_key('<key_text>') 
+        >>> aa.new_key('<key_text>') 
 
-* Client.new_key() will accept any input specified in the apiaxle api for provisioning an new key as a keyword_argument
+* Apiaxle.new_key() will accept any input specified in the apiaxle api for provisioning an new key as a keyword_argument
 
 ### Link key to api
     
-        >>> api_client.link_key('<api_name>','<key_text>')
+        >>> aa.link_key('<api_name>','<key_text>')
+        
+### Update existing api
+        >>> demo_api = aa.api('<api_name>')
+        >>> demo_api.update(keyWord='value',keyWord2='value2')
+
+### Update existing key
+        >>> demo_key = aa.key('<key_name>')
+        >>> demo_key.update(keyWord='value',keyWord2='value2')
+
+Tests
+========
+Tests are run with nose:
+       >>> nosetests
 
 
 Contributing
