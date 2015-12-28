@@ -1,0 +1,11 @@
+{
+    "meta": {
+        "version": 1,
+        "status_code": 200,
+        "pagination": {
+            "next": {},
+            "prev": {}
+        }
+    },
+    "results": ["test", "test2"]
+}

@@ -1,24 +1,19 @@
 import cStringIO
-import logging, json
+import logging
 import traceback
-from logging import getLogger
-from api import Api
-from key import Key
-
+import json
 try:
     import pycurl
 except ImportError, e:
     print("Error: {}\n Please install pycurl.")
 
+logger = logging
 
-class Client():
 
-    VERSION = 'v1'
+class RestClient(object):
 
-    def __init__(self, host='localhost', port=3000):
-        self.host = host
-        self.port = port
-        self.api_url = "http://{}:{}/{}".format(self.host, self.port, self.VERSION)
+    def __init__(self, url):
+        self.api_url = url
         self.curl_timeout = 5
 
     def __do_curl(self, path, method=None, payload=None):
@@ -51,66 +46,40 @@ class Client():
         try:
             c.perform()
         except Exception, e:
-            logging.error(e)
+            logger.error(e)
             return None
 
         statusCode = c.getinfo(pycurl.HTTP_CODE)
         error = c.errstr()
         message = buf.getvalue()  # get results do nothing yet
 
+        logger.error(message)
+
         try:
             return json.loads(message).get('results')
-        except Error, e:
-            logging.error(message)
-            logging.error(e)
+        except Exception, e:
+            logger.error(message)
+            logger.error(e)
 
         return None
 
-    def __get(self, path):
+    def get(self, path):
         return self.__parse_response(self.__do_curl(path, 'GET'))
 
-    def __post(self, path, payload):
+    def post(self, path, payload):
         return self.__parse_response(self.__do_curl(path, 'POST', payload))
 
-    def __put(self, path, payload={}):
+    def put(self, path, payload={}):
         return self.__parse_response(self.__do_curl(path, 'PUT', payload))
+
+    def delete(self, path, payload={}):
+        return self.__parse_response(self.__do_curl(path, 'DELETE', payload))
 
     def __parse_response(self, response):
         try:
             if 'error' in response:
-                logging.error(response['error']['message'])
+                logger.error(response['error']['message'])
         except TypeError, e:
-            logging.error(e)
+            logger.error(e)
 
         return response
-
-    def apis(self):
-        return self.__get('/apis')
-
-    def keys(self):
-        return self.__get('/keys')
-
-    def new_api(self, name, **kwargs):
-        response = self.__post('/api/{}'.format(name), kwargs)
-        return self.api(name)
-
-    def new_key(self, key):
-        self.__post('/key/{}'.format(key), {})
-        return self.key(key)
-
-    def link_key(self, api, key):
-        return self.__put('/api/{api}/linkkey/{key}'.format(api=api, key=key))
-
-    def api(self, name):
-        try:
-            return Api(self.__get('/api/{}'.format(name)), name)
-        except Exception, e:
-            logging.error(e)
-        return None
-
-    def key(self, key):
-        try:
-            return Key(self.__get('/key/{}'.format(key)), key)
-        except Exception, e:
-            logging.error(e)
-        return None

@@ -1,0 +1,23 @@
+{
+    "meta": {
+        "version": 1,
+        "status_code": 200
+    },
+    "results": {
+        "protocol": "http",
+        "tokenSkewProtectionCount": 3,
+        "apiFormat": "json",
+        "endPointTimeout": 2,
+        "disabled": false,
+        "strictSSL": true,
+        "sendThroughApiKey": false,
+        "sendThroughApiSig": false,
+        "hasCapturePaths": false,
+        "allowKeylessUse": false,
+        "keylessQps": 2,
+        "keylessQpd": 172800,
+        "corsEnabled": false,
+        "endPoint": "test-endpoint",
+        "createdAt": 1448904661174
+    }
+}
